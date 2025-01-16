@@ -11,7 +11,7 @@ export default function MainLayout() {
     dispatch(logOut());
   };
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <Layout style={{ minHeight: "100%" }}>
       <Sidebar  />
       <Layout>
         <Header style={{ padding: 0 }}>
