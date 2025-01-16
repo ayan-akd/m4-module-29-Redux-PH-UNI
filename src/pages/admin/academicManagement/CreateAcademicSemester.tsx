@@ -4,6 +4,8 @@ import { Button, Col, Flex } from "antd";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { academicSemesterSchema } from "@/schemas/academicManagement.schema";
+import { useAddAcademicSemesterMutation } from "@/redux/features/admin/academicManagement.api";
+import { toast } from "sonner";
 
 const academicSemesterOptions = [
   { value: "01", label: "Autumn" },
@@ -31,7 +33,9 @@ const monthOptions = [
   { value: "December", label: "December" },
 ];
 export default function CreateAcademicSemester() {
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+
+    const [addAcademicSemester] = useAddAcademicSemesterMutation();
+  const onSubmit: SubmitHandler<FieldValues> =async (data) => {
     const name = academicSemesterOptions[Number(data.name) - 1]?.label;
     const semesterData = {
       name,
@@ -40,7 +44,17 @@ export default function CreateAcademicSemester() {
       startMonth: data.startMonth,
       endMonth: data.endMonth,
     };
-    console.log(semesterData);
+    try {
+      const res =await addAcademicSemester(semesterData);
+      if (res) {
+        toast.success("Academic Semester Created Successfully");
+        console.log(res);
+      }
+
+    } catch (err) {
+      toast.error("Something went wrong");
+      console.log(err);
+    }
   };
 
   return (
