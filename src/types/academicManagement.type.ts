@@ -1,5 +1,5 @@
 export type TAcademicSemester = {
-  id: string;
+  _id: string;
   name: string;
   year: string;
   code: string;
