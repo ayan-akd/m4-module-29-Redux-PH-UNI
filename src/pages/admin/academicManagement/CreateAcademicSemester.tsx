@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { academicSemesterSchema } from "@/schemas/academicManagement.schema";
 import { useAddAcademicSemesterMutation } from "@/redux/features/admin/academicManagement.api";
 import { toast } from "sonner";
+import { TResponse } from "@/types/global";
 
 const academicSemesterOptions = [
   { value: "01", label: "Autumn" },
@@ -33,9 +34,9 @@ const monthOptions = [
   { value: "December", label: "December" },
 ];
 export default function CreateAcademicSemester() {
-
-    const [addAcademicSemester] = useAddAcademicSemesterMutation();
-  const onSubmit: SubmitHandler<FieldValues> =async (data) => {
+  const [addAcademicSemester] = useAddAcademicSemesterMutation();
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const toastId = toast.loading("Creating Academic Semester....");
     const name = academicSemesterOptions[Number(data.name) - 1]?.label;
     const semesterData = {
       name,
@@ -45,14 +46,22 @@ export default function CreateAcademicSemester() {
       endMonth: data.endMonth,
     };
     try {
-      const res =await addAcademicSemester(semesterData);
+      const res = await addAcademicSemester(semesterData) as TResponse;
       if (res) {
-        toast.success("Academic Semester Created Successfully");
+        toast.success("Academic Semester Created Successfully", {
+          id: toastId,
+        });
         console.log(res);
       }
-
+      if (res.error) {
+        toast.error(res.error.data.message, {
+          id: toastId,
+        });
+      }
     } catch (err) {
-      toast.error("Something went wrong");
+      toast.error("Something went wrong", {
+        id: toastId,
+      });
       console.log(err);
     }
   };
