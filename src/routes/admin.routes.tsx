@@ -3,7 +3,6 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import CreateAdmin from "../pages/admin/CreateAdmin";
 import CreateFaculty from "../pages/admin/CreateFaculty";
 import CreateStudent from "../pages/admin/CreateStudent";
-import CreateAcademicSemester from "@/pages/admin/academicManagement/CreateAcademicSemester";
 import CreateAcademicFaculty from "@/pages/admin/academicManagement/CreateAcademicFaculty";
 import AcademicFaculty from "@/pages/admin/academicManagement/AcademicFaculty";
 import CreateAcademicDepartment from "@/pages/admin/academicManagement/CreateAcademicDepartment";
@@ -19,11 +18,6 @@ export const adminPaths = [
   {
     name: "Academic Management",
     children: [
-      {
-        name: "Create A. Semester",
-        path: "create-academic-semester",
-        element: <CreateAcademicSemester />,
-      },
       {
         name: "Academic Semester",
         path: "academic-semester",

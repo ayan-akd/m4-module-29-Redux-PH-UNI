@@ -33,7 +33,7 @@ const monthOptions = [
   { value: "November", label: "November" },
   { value: "December", label: "December" },
 ];
-export default function CreateAcademicSemester() {
+export default function CreateAcademicSemester({ handleOk, refetch }: { handleOk: () => void; refetch: () => void }) {
   const [addAcademicSemester] = useAddAcademicSemesterMutation();
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const toastId = toast.loading("Creating Academic Semester....");
@@ -46,12 +46,13 @@ export default function CreateAcademicSemester() {
       endMonth: data.endMonth,
     };
     try {
-      const res = await addAcademicSemester(semesterData) as TResponse;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = await addAcademicSemester(semesterData) as TResponse<any>;
       if (res) {
         toast.success("Academic Semester Created Successfully", {
           id: toastId,
         });
-        console.log(res);
+        refetch();
       }
       if (res.error) {
         toast.error(res.error.data.message, {
@@ -67,8 +68,9 @@ export default function CreateAcademicSemester() {
   };
 
   return (
-    <Flex justify="center" align="center">
-      <Col span={6}>
+    <Flex  align="center">
+      <Col span={24}>
+      <h1 className="text-center font-bold mb-5 text-xl">Create New Semester</h1>
         <PHForm
           onSubmit={onSubmit}
           resolver={zodResolver(academicSemesterSchema)}
@@ -89,9 +91,11 @@ export default function CreateAcademicSemester() {
             name="endMonth"
             options={monthOptions}
           />
-          <Button type="primary" htmlType="submit">
+          <div className="flex justify-center">
+          <Button onClick={handleOk} type="primary" htmlType="submit">
             Submit
           </Button>
+          </div>
         </PHForm>
       </Col>
     </Flex>

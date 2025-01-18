@@ -1,8 +1,9 @@
 import { useGetAllSemestersQuery } from "@/redux/features/admin/academicManagement.api";
 import { TQueryParams } from "@/types";
 import { TAcademicSemester } from "@/types/academicManagement.type";
-import { Button, Table, TableColumnsType, TableProps } from "antd";
+import { Button, Modal, Table, TableColumnsType, TableProps } from "antd";
 import { useState } from "react";
+import CreateAcademicSemester from "./CreateAcademicSemester";
 
 export type TTableData = Pick<
   TAcademicSemester,
@@ -10,8 +11,18 @@ export type TTableData = Pick<
 >;
 
 export default function AcademicSemester() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [params, setParams] = useState<TQueryParams[]>([]);
-  const { data: semesterData, isFetching } = useGetAllSemestersQuery(params);
+  const { data: semesterData, isFetching, refetch } = useGetAllSemestersQuery(params);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
 
   const tableData = semesterData?.data?.map((semester) => ({
     key: semester._id,
@@ -111,6 +122,9 @@ export default function AcademicSemester() {
 
   return (
     <div>
+      <div className="flex justify-end mb-5">
+        <Button onClick={showModal} type="primary">Add Semester</Button>
+      </div>
       <Table<TTableData>
         loading={isFetching}
         columns={columns}
@@ -118,6 +132,9 @@ export default function AcademicSemester() {
         onChange={onChange}
         showSorterTooltip={{ target: "sorter-icon" }}
       />
+      <Modal open={isModalOpen} footer={null}>
+        <CreateAcademicSemester handleOk={handleOk} refetch={refetch}></CreateAcademicSemester>
+      </Modal>
     </div>
   );
 }
