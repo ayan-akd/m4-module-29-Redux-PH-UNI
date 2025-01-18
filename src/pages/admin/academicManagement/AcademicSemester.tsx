@@ -1,9 +1,15 @@
-import { useGetAllSemestersQuery } from "@/redux/features/admin/academicManagement.api";
+import {
+  useDeleteAcademicSemesterMutation,
+  useGetAllSemestersQuery,
+} from "@/redux/features/admin/academicManagement.api";
 import { TQueryParams } from "@/types";
 import { TAcademicSemester } from "@/types/academicManagement.type";
-import { Button, Modal, Table, TableColumnsType, TableProps } from "antd";
+import { Button, Table, TableColumnsType, TableProps } from "antd";
 import { useState } from "react";
-import CreateAcademicSemester from "./CreateAcademicSemester";
+import CreateAcademicSemesterModal from "@/components/modal/CreateAcademicSemesterModal";
+import EditAcademicSemesterModal from "@/components/modal/EditAcademicSemesterModal";
+import { alertModal } from "@/components/modal/alertModal";
+import { toast } from "sonner";
 
 export type TTableData = Pick<
   TAcademicSemester,
@@ -12,17 +18,11 @@ export type TTableData = Pick<
 
 export default function AcademicSemester() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [record, setRecord] = useState<TTableData>();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [params, setParams] = useState<TQueryParams[]>([]);
-  const { data: semesterData, isFetching, refetch } = useGetAllSemestersQuery(params);
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
+  const { data: semesterData, isFetching } = useGetAllSemestersQuery(params);
+  const [deleteAcademicSemester] = useDeleteAcademicSemesterMutation();
 
   const tableData = semesterData?.data?.map((semester) => ({
     key: semester._id,
@@ -32,6 +32,29 @@ export default function AcademicSemester() {
     startMonth: semester.startMonth,
     endMonth: semester.endMonth,
   }));
+
+  const showAddModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleDelete = async (id: string) => {
+    const toastId = toast.loading("Deleting Academic Semester....");
+    try {
+      const res = await deleteAcademicSemester(id);
+      if (res.data) {
+        toast.success("Academic Semester Deleted Successfully", {
+          id: toastId,
+        });
+      }
+      if (res.error) {
+        toast.dismiss(toastId);
+      }
+    } catch (err) {
+      toast.error("Something went wrong", {
+        id: toastId,
+      });
+      console.log(err);
+    }
+  };
 
   const columns: TableColumnsType<TTableData> = [
     {
@@ -89,11 +112,27 @@ export default function AcademicSemester() {
     },
     {
       title: "Action",
-      render: () => {
+      render: (record) => {
+        const showEditModal = (record: TTableData) => () => {
+          setIsEditModalOpen(true);
+          setRecord(record);
+        };
         return (
           <div className="flex gap-2">
-            <Button type="primary">Edit</Button>
-            <Button type="primary" danger>
+            <Button onClick={showEditModal(record)} type="primary">
+              Edit
+            </Button>
+            <Button
+              type="primary"
+              danger
+              onClick={() =>
+                alertModal(
+                  "Are you sure you want to delete this semester ?",
+                  `${record.name}  ${record.year} semester will be deleted`,
+                  () => handleDelete(record.key)
+                )
+              }
+            >
               Delete
             </Button>
           </div>
@@ -123,7 +162,9 @@ export default function AcademicSemester() {
   return (
     <div>
       <div className="flex justify-end mb-5">
-        <Button onClick={showModal} type="primary">Add Semester</Button>
+        <Button onClick={showAddModal} type="primary">
+          Add Semester
+        </Button>
       </div>
       <Table<TTableData>
         loading={isFetching}
@@ -131,10 +172,25 @@ export default function AcademicSemester() {
         dataSource={tableData}
         onChange={onChange}
         showSorterTooltip={{ target: "sorter-icon" }}
+        style={{ overflow: "scroll" }}
       />
-      <Modal open={isModalOpen} footer={null}>
-        <CreateAcademicSemester handleOk={handleOk} refetch={refetch}></CreateAcademicSemester>
-      </Modal>
+      {isModalOpen ? (
+        <CreateAcademicSemesterModal
+          showModal={true}
+          setIsModalOpen={setIsModalOpen}
+        ></CreateAcademicSemesterModal>
+      ) : (
+        ""
+      )}
+      {isEditModalOpen && record ? (
+        <EditAcademicSemesterModal
+          record={record}
+          showModal={true}
+          setIsModalOpen={setIsEditModalOpen}
+        ></EditAcademicSemesterModal>
+      ) : (
+        ""
+      )}
     </div>
   );
 }

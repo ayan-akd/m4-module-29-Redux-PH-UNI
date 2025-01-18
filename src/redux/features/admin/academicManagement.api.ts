@@ -18,6 +18,7 @@ const academicManagementApi = baseApi.injectEndpoints({
           params,
         };
       },
+      providesTags: ["academic-semester"],
       transformResponse: (response: TResponseRedux<TAcademicSemester[]>) => {
         return {
           data: response.data,
@@ -31,9 +32,29 @@ const academicManagementApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["academic-semester"],
     }),
+    updateAcademicSemester: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/academic-semesters/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["academic-semester"],
+    }),
+    deleteAcademicSemester: builder.mutation({
+      query: (id) => ({
+        url: `/academic-semesters/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["academic-semester"],
+    })
   }),
 });
 
-export const { useGetAllSemestersQuery, useAddAcademicSemesterMutation } =
-  academicManagementApi;
+export const {
+  useGetAllSemestersQuery,
+  useAddAcademicSemesterMutation,
+  useUpdateAcademicSemesterMutation,
+  useDeleteAcademicSemesterMutation,
+} = academicManagementApi;

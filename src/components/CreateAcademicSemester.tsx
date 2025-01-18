@@ -7,33 +7,21 @@ import { academicSemesterSchema } from "@/schemas/academicManagement.schema";
 import { useAddAcademicSemesterMutation } from "@/redux/features/admin/academicManagement.api";
 import { toast } from "sonner";
 import { TResponse } from "@/types/global";
+import { academicSemesterOptions, monthOptions, yearOptions } from "@/pages/admin/academicManagement/AcademicSemesterConstants";
 
-const academicSemesterOptions = [
-  { value: "01", label: "Autumn" },
-  { value: "02", label: "Summer" },
-  { value: "03", label: "Fall" },
-];
 
-const currentYear = new Date().getFullYear();
-const yearOptions = [0, 1, 2, 3, 4].map((number) => ({
-  value: (currentYear + number).toString(),
-  label: (currentYear + number).toString(),
-}));
-const monthOptions = [
-  { value: "January", label: "January" },
-  { value: "February", label: "February" },
-  { value: "March", label: "March" },
-  { value: "April", label: "April" },
-  { value: "May", label: "May" },
-  { value: "June", label: "June" },
-  { value: "July", label: "July" },
-  { value: "August", label: "August" },
-  { value: "September", label: "September" },
-  { value: "October", label: "October" },
-  { value: "November", label: "November" },
-  { value: "December", label: "December" },
-];
-export default function CreateAcademicSemester({ handleOk, refetch }: { handleOk: () => void; refetch: () => void }) {
+export default function CreateAcademicSemester({
+  setIsModalOpen,
+}: {
+  setIsModalOpen: (isOpen: boolean) => void;
+}) {
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   const [addAcademicSemester] = useAddAcademicSemesterMutation();
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const toastId = toast.loading("Creating Academic Semester....");
@@ -47,17 +35,15 @@ export default function CreateAcademicSemester({ handleOk, refetch }: { handleOk
     };
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res = await addAcademicSemester(semesterData) as TResponse<any>;
-      if (res) {
+      const res = (await addAcademicSemester(semesterData)) as TResponse<any>;
+      if (res.data) {
         toast.success("Academic Semester Created Successfully", {
           id: toastId,
         });
-        refetch();
+        handleOk();
       }
       if (res.error) {
-        toast.error(res.error.data.message, {
-          id: toastId,
-        });
+        toast.dismiss(toastId);
       }
     } catch (err) {
       toast.error("Something went wrong", {
@@ -68,9 +54,11 @@ export default function CreateAcademicSemester({ handleOk, refetch }: { handleOk
   };
 
   return (
-    <Flex  align="center">
+    <Flex align="center">
       <Col span={24}>
-      <h1 className="text-center font-bold mb-5 text-xl">Create New Semester</h1>
+        <h1 className="text-center font-bold mb-5 text-xl">
+          Create New Semester
+        </h1>
         <PHForm
           onSubmit={onSubmit}
           resolver={zodResolver(academicSemesterSchema)}
@@ -91,10 +79,13 @@ export default function CreateAcademicSemester({ handleOk, refetch }: { handleOk
             name="endMonth"
             options={monthOptions}
           />
-          <div className="flex justify-center">
-          <Button onClick={handleOk} type="primary" htmlType="submit">
-            Submit
-          </Button>
+          <div className="flex justify-center gap-2">
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+            <Button onClick={handleCancel} type="primary" danger>
+              Cancel
+            </Button>
           </div>
         </PHForm>
       </Col>
