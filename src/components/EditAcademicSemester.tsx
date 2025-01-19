@@ -4,18 +4,21 @@ import { Button, Col, Flex } from "antd";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
 import { TResponse } from "@/types/global";
-import { TTableData } from "@/pages/admin/academicManagement/AcademicSemester";
-import { academicSemesterOptions, monthOptions, yearOptions } from "@/pages/admin/academicManagement/AcademicSemesterConstants";
-import { useUpdateAcademicSemesterMutation } from "@/redux/features/admin/academicManagement.api";
+import { TSemesterTableData } from "@/pages/admin/academicManagement/AcademicSemester";
+import {
+  academicSemesterOptions,
+  monthOptions,
+  yearOptions,
+} from "@/pages/admin/academicManagement/AcademicManagementConstants";
+import { academicManagementHooks } from "@/hooks/academicManagementHooks";
 
 export default function EditAcademicSemester({
   setIsModalOpen,
   record,
 }: {
   setIsModalOpen: (isOpen: boolean) => void;
-  record: TTableData;
+  record: TSemesterTableData;
 }) {
-
   let codeForRecord;
   if (record) {
     codeForRecord = academicSemesterOptions.find(
@@ -29,6 +32,7 @@ export default function EditAcademicSemester({
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  const { useUpdateAcademicSemesterMutation } = academicManagementHooks;
   const [updateAcademicSemester] = useUpdateAcademicSemesterMutation();
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const toastId = toast.loading("Updating Academic Semester....");
@@ -41,8 +45,11 @@ export default function EditAcademicSemester({
       endMonth: data.endMonth,
     };
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res = (await updateAcademicSemester({id:record._id, data:semesterData})) as TResponse<any>;
+      const res = (await updateAcademicSemester({
+        id: record._id,
+        data: semesterData,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      })) as TResponse<any>;
       if (res.data) {
         toast.success("Academic Semester Updated Successfully", {
           id: toastId,
@@ -65,9 +72,7 @@ export default function EditAcademicSemester({
   return (
     <Flex align="center">
       <Col span={24}>
-        <h1 className="text-center font-bold mb-5 text-xl">
-          Update Semester
-        </h1>
+        <h1 className="text-center font-bold mb-5 text-xl">Update Semester</h1>
         <PHForm
           onSubmit={onSubmit}
           defaultValues={{

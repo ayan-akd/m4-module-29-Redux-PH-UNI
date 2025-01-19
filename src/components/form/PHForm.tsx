@@ -32,7 +32,7 @@ export default function PHForm({
   const methods = useForm(formConfig);
   return (
     <FormProvider {...methods}>
-      <Form style={{fontWeight: "bold"}} layout="vertical" onFinish={methods.handleSubmit(onSubmit)}>{children}</Form>
+      <Form  layout="vertical" onFinish={methods.handleSubmit(onSubmit)}>{children}</Form>
     </FormProvider>
   );
 }

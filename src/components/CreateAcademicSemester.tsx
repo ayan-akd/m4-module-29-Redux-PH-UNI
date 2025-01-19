@@ -4,11 +4,14 @@ import { Button, Col, Flex } from "antd";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { academicSemesterSchema } from "@/schemas/academicManagement.schema";
-import { useAddAcademicSemesterMutation } from "@/redux/features/admin/academicManagement.api";
 import { toast } from "sonner";
 import { TResponse } from "@/types/global";
-import { academicSemesterOptions, monthOptions, yearOptions } from "@/pages/admin/academicManagement/AcademicSemesterConstants";
-
+import {
+  academicSemesterOptions,
+  monthOptions,
+  yearOptions,
+} from "@/pages/admin/academicManagement/AcademicManagementConstants";
+import { academicManagementHooks } from "@/hooks/academicManagementHooks";
 
 export default function CreateAcademicSemester({
   setIsModalOpen,
@@ -22,6 +25,7 @@ export default function CreateAcademicSemester({
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  const { useAddAcademicSemesterMutation } = academicManagementHooks;
   const [addAcademicSemester] = useAddAcademicSemesterMutation();
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const toastId = toast.loading("Creating Academic Semester....");

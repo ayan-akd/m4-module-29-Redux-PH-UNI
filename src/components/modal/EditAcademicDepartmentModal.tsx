@@ -1,23 +1,23 @@
 import { Modal } from "antd";
-import EditAcademicSemester from "../EditAcademicSemester";
-import { TSemesterTableData } from "@/pages/admin/academicManagement/AcademicSemester";
+import EditAcademicDepartment from "../EditAcademicDepartment";
+import { TAcademicDepartmentTableData } from "@/pages/admin/academicManagement/AcademicDepartment";
 
-export default function EditAcademicSemesterModal({
+export default function EditAcademicDepartmentModal({
   record,
   showModal,
   setIsModalOpen,
 }: {
-  record: TSemesterTableData;
+  record: TAcademicDepartmentTableData;
   showModal: boolean;
   setIsModalOpen: (isOpen: boolean) => void;
 }) {
   return (
     <div>
       <Modal open={showModal} footer={null} closable={false}>
-        <EditAcademicSemester
+        <EditAcademicDepartment
           record={record}
           setIsModalOpen={setIsModalOpen}
-        ></EditAcademicSemester>
+        ></EditAcademicDepartment>
       </Modal>
     </div>
   );

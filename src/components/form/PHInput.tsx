@@ -11,9 +11,10 @@ export default function PHInput({ type, name, label }: TInputProps) {
     <div>
       <Controller
         name={name}
-        render={({ field }) => (
+        render={({ field, fieldState: { error }  }) => (
           <Form.Item label={label}>
             <Input {...field} id={name} type={type} size="large" />
+            {error && <small style={{ color: "red" }}>{error.message}</small>}
           </Form.Item>
         )}
       />

@@ -3,9 +3,7 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import CreateAdmin from "../pages/admin/CreateAdmin";
 import CreateFaculty from "../pages/admin/CreateFaculty";
 import CreateStudent from "../pages/admin/CreateStudent";
-import CreateAcademicFaculty from "@/pages/admin/academicManagement/CreateAcademicFaculty";
 import AcademicFaculty from "@/pages/admin/academicManagement/AcademicFaculty";
-import CreateAcademicDepartment from "@/pages/admin/academicManagement/CreateAcademicDepartment";
 import AcademicDepartment from "@/pages/admin/academicManagement/AcademicDepartment";
 
 
@@ -24,19 +22,9 @@ export const adminPaths = [
         element: <AcademicSemester />,
       },
       {
-        name: "Create A. Faculty",
-        path: "create-academic-faculty",
-        element: <CreateAcademicFaculty />,
-      },
-      {
         name: "Academic Faculty",
         path: "academic-faculty",
         element: <AcademicFaculty />,
-      },
-      {
-        name: "Create A. Department",
-        path: "create-academic-department",
-        element: <CreateAcademicDepartment />,
       },
       {
         name: "Academic Department",

@@ -1,7 +1,3 @@
-import {
-  useDeleteAcademicSemesterMutation,
-  useGetAllSemestersQuery,
-} from "@/redux/features/admin/academicManagement.api";
 import { TQueryParams } from "@/types";
 import { TAcademicSemester } from "@/types/academicManagement.type";
 import { Button, Table, TableColumnsType, TableProps } from "antd";
@@ -10,21 +6,24 @@ import CreateAcademicSemesterModal from "@/components/modal/CreateAcademicSemest
 import EditAcademicSemesterModal from "@/components/modal/EditAcademicSemesterModal";
 import { alertModal } from "@/components/modal/alertModal";
 import { toast } from "sonner";
+import { academicManagementHooks } from "@/hooks/academicManagementHooks";
 
-export type TTableData = Pick<
+export type TSemesterTableData = Pick<
   TAcademicSemester,
   "_id" | "name" | "year" | "startMonth" | "endMonth"
 >;
 
 export default function AcademicSemester() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [record, setRecord] = useState<TTableData>();
+  const [record, setRecord] = useState<TSemesterTableData>();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [params, setParams] = useState<TQueryParams[]>([]);
+  const { useGetAllSemestersQuery, useDeleteAcademicSemesterMutation } =
+    academicManagementHooks;
   const { data: semesterData, isFetching } = useGetAllSemestersQuery(params);
   const [deleteAcademicSemester] = useDeleteAcademicSemesterMutation();
 
-  const tableData = semesterData?.data?.map((semester) => ({
+  const tableData = semesterData?.data?.map((semester: TAcademicSemester) => ({
     key: semester._id,
     _id: semester._id,
     name: semester.name,
@@ -56,7 +55,7 @@ export default function AcademicSemester() {
     }
   };
 
-  const columns: TableColumnsType<TTableData> = [
+  const columns: TableColumnsType<TSemesterTableData> = [
     {
       title: "Name",
       dataIndex: "name",
@@ -113,7 +112,7 @@ export default function AcademicSemester() {
     {
       title: "Action",
       render: (record) => {
-        const showEditModal = (record: TTableData) => () => {
+        const showEditModal = (record: TSemesterTableData) => () => {
           setIsEditModalOpen(true);
           setRecord(record);
         };
@@ -141,7 +140,7 @@ export default function AcademicSemester() {
     },
   ];
 
-  const onChange: TableProps<TTableData>["onChange"] = (
+  const onChange: TableProps<TSemesterTableData>["onChange"] = (
     _pagination,
     filters,
     _sorter,
@@ -161,12 +160,15 @@ export default function AcademicSemester() {
 
   return (
     <div>
+      <h1 className="text-center mb-5 text-xl font-bold">
+        Academic Semester
+      </h1>
       <div className="flex justify-end mb-5">
         <Button onClick={showAddModal} type="primary">
           Add Semester
         </Button>
       </div>
-      <Table<TTableData>
+      <Table<TSemesterTableData>
         loading={isFetching}
         columns={columns}
         dataSource={tableData}
